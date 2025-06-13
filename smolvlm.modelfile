@@ -1,0 +1,21 @@
+FROM ./SmolVLM-256M-Instruct-f16.gguf
+ADAPTER ./mmproj-SmolVLM-256M-Instruct-f16.gguf
+
+TEMPLATE """
+<|im_start|>system
+{{ .System }}
+<end_of_utterance>
+{{- range .Messages }}
+<|im_start|>{{ .Role }}:
+{{ .Content }}
+<end_of_utterance>
+{{- end }}
+<|im_start|>assistant
+"""
+
+SYSTEM "You are a visual assistant. Describe images clearly and answer questions based on visual content."
+
+PARAMETER num_ctx 4096
+PARAMETER stop "<end_of_utterance>"
+PARAMETER stop "<|im_start|>"
+PARAMETER temperature 0.01

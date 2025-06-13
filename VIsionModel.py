@@ -33,9 +33,33 @@ class VisionModel:
         stream = self.get_chat_stream(text, self.messages, self.b64)
 
         # 处理聊天流中的每一部分
-        for chunk in stream:
-            content = chunk['message']['content']
-            yield content
+        if self._stream:
+            # 流式模式
+            for chunk in stream:
+                try:
+                    if hasattr(chunk, 'message') and hasattr(chunk.message, 'content'):
+                        content = chunk.message.content
+                        if content:
+                            yield content
+                    elif isinstance(chunk, dict) and 'message' in chunk:
+                        content = chunk['message'].get('content', '')
+                        if content:
+                            yield content
+                except Exception as e:
+                    print(f"处理chunk时出错: {e}")
+                    continue
+        else:
+            # 非流式模式
+            try:
+                if hasattr(stream, 'message') and hasattr(stream.message, 'content'):
+                    yield stream.message.content
+                elif isinstance(stream, dict) and 'message' in stream:
+                    yield stream['message'].get('content', '')
+                else:
+                    yield str(stream)
+            except Exception as e:
+                print(f"处理响应时出错: {e}")
+                yield ""
 
 
 
