@@ -56,9 +56,10 @@ ollama create smolvlm:256m -f smolvlm.modelfile
 ```
 
 ## 安装依赖
-
+## 安装ollama依赖,用于调用ollama模型
 ```bash
 pip install opencv-python
+pip install ollama
 ```
 
 ## 克隆仓库
@@ -104,7 +105,6 @@ python smolvlm-api.py --image path/to/your/image.jpg --stream
 ```
 
 ## 参数说明
-
 - `--model`: 指定使用的模型（默认：smolvlm:256m）
 - `--image`: 指定要分析的图片路径
 - `--camera`: 启用摄像头模式
@@ -116,3 +116,4 @@ python smolvlm-api.py --image path/to/your/image.jpg --stream
 1. 使用摄像头时，按空格键拍照，按ESC退出
 2. 确保系统已正确安装并配置 Ollama
 3. 确保有足够的系统资源运行模型
+

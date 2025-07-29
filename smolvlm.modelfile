@@ -1,21 +1,22 @@
-FROM ./SmolVLM-256M-Instruct-f16.gguf
-ADAPTER ./mmproj-SmolVLM-256M-Instruct-f16.gguf
+# 与实际文件名完全一致  # 注释：这行是说明性注释，提示该modelfile应与实际模型文件名保持一致
+FROM ./SmolVLM-256M-Instruct-f16.gguf  # 注释：指定主模型文件路径，这里使用相对路径引用当前目录下的SmolVLM-256M-Instruct-f16.gguf模型文件
+ADAPTER ./mmproj-SmolVLM-256M-Instruct-f16.gguf  # 注释：指定适配器文件路径，用于加载模型的多模态投影层（mmproj）适配器
 
-TEMPLATE """
-<|im_start|>system
-{{ .System }}
-<end_of_utterance>
-{{- range .Messages }}
-<|im_start|>{{ .Role }}:
-{{ .Content }}
-<end_of_utterance>
-{{- end }}
+# 定义对话模板  # 注释：说明以下部分是对话模板的定义
+TEMPLATE """<|im_start|>system
+You are a visual assistant powered by SmolVLM-256M. Describe images clearly and answer questions based on visual content with high efficiency.
+<|im_end|>
+<|im_start|>{{ .Role }}
+{{ .Prompt }}
+<|im_end|>
 <|im_start|>assistant
-"""
+"""  # 注释：定义对话格式模板，包含系统提示（system）、用户角色（{{ .Role }}）、用户输入（{{ .Prompt }}）和助手响应的固定格式，使用<|im_start|>和<|im_end|>作为分隔符
 
-SYSTEM "You are a visual assistant. Describe images clearly and answer questions based on visual content."
+# 配置参数  # 注释：说明以下部分是模型运行时的参数配置
+PARAMETER num_ctx 4096  # 注释：设置上下文窗口大小为4096 tokens，决定模型能处理的最大文本长度
+PARAMETER stop "<|im_end|>"  # 注释：设置停止标记，当模型生成<|im_end|>时停止生成
+PARAMETER stop "<|im_start|>"  # 注释：设置另一个停止标记，避免模型生成新的对话开始标记
+PARAMETER temperature 0.01  # 注释：设置温度参数为0.01（接近0），使生成结果更确定、更集中
+PARAMETER top_p 0.9  # 注释：设置top_p参数为0.9，控制生成时的概率分布范围，值越低生成越保守
+PARAMETER repeat_penalty 1.1  # 注释：设置重复惩罚系数为1.1，轻微惩罚重复出现的文本，减少冗余
 
-PARAMETER num_ctx 4096
-PARAMETER stop "<end_of_utterance>"
-PARAMETER stop "<|im_start|>"
-PARAMETER temperature 0.01
